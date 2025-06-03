@@ -17,6 +17,8 @@ mvnw
 HELP.md
 .mvn/
 .scannerwork/
+.venv/
+.ipynb_checkpoints/
 
 ### IntelliJ IDEA ###
 .idea/

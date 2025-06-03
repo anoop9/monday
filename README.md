@@ -112,3 +112,39 @@ ORDER BY
 ```
 ## Section 1.2: Summary table - csv
 Check summary.csv in this folder
+
+
+# Part 2. EDA
+
+### Install python 3
+```
+ #Then install a virtual evnironment
+ 
+ python3 -m venv .venv 
+ 
+ #activate venv
+ source .venv/bin/activate 
+ 
+ pip install pandas matplotlib seaborn
+
+```
+
+Then Check eda.ipynb for plots and visulaization
+
+
+## Recommendations:
+
+
+- **Increase marketing spend** in these top-performing countries to leverage high ARPI_D14 and ROAS_D14, as shown in the bar plots.
+- **Analyze user behavior** in these countries to identify what drives higher revenue and engagement.
+- **Experiment with new ad creatives and channels** to further optimize CPI and maximize installs, as CPI is reasonable relative to returns.
+- **Monitor for market saturation** and diminishing returns as spend increases, using trends in the visualized metrics.
+
+
+# Part 3. LTV prediction
+
+Check ltv.ipynb
+
+# Part 4. AB Testing
+
+Check abtest.ipynb
