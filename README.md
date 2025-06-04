@@ -90,11 +90,12 @@ Then Check eda.ipynb for visualization
 
 ## Recommendations for Next Steps
 
-- Increase marketing spend in US, DE and GB , the top-performing countries to leverage high ARPI_D14 and ROAS_D14.
+- Increase marketing spend in US, DE and GB, the top-performing countries to leverage high ARPI_D14 and ROAS_D14, as shown in the bar plots.
 - Monitor CPI and ROAS_D14 to ensure marketing efficiency remains high as spend increases.
 - Analyze user behavior in these countries to identify drivers of high ARPI_D14 and replicate successful strategies elsewhere.
 - Experiment with new ad creatives and channels to further optimize CPI and maximize installs.
 - Watch for signs of market saturation in installs and ARPI_D14 trends to optimize future campaigns.
+
 
 # Part 3. LTV prediction
 
