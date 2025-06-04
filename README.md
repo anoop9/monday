@@ -1,75 +1,42 @@
 # Steps
 
+- Installed Postgresql and pgadmin 
+- Installed Python3 and jupyter notebook
+
+created a user named 'admin' and database named 'test'. Granted all privileges to the 'admin' user to 'test' database
 ```
-CREATE USER admin WITH PASSWORD 'admin';  # Create the user admin
+CREATE USER admin WITH PASSWORD 'admin';
 CREATE DATABASE test;
 GRANT ALL PRIVILEGES ON DATABASE test TO admin;
-
-
 ```
 
-postgres
-hostname: localhost
-port: 5432
-username: admin
-password: admin
-db: test
+- hostname: localhost
+- port: 5432
+- username: admin
+- password: admin
+- db: test
 
-# Part 1:
-## Section 1.1: Table creation sqls
+# Part 1
+## Section 1.1: Create database and associated tables
+
+Due to large file size and to avoid data loss, the **tableimport.ipynb** is used to import csv files and 
+convert to postgresql tables.
 
 ### spend table
-
-```
-
-CREATE TABLE spend (
-country_id INTEGER,
-client VARCHAR(255),
-year INTEGER,
-month INTEGER,
-day INTEGER,
-spend NUMERIC(18,8)
-);
-
-```
-
-
-
-1. spend colum truncated to 8 decimal places
+- Total imported number of rows : 102
 
 ### installs table
 
-```
-CREATE TABLE installs (
-country VARCHAR(2),
-country_id INTEGER,
-user_install_id UUID,
-client VARCHAR(255),
-year INTEGER,
-month INTEGER,
-day INTEGER
-);
-```
-
+- Total imported number of rows : 81752 
 ### revenue table
 
-```
-CREATE TABLE revenue (
-country VARCHAR(2),
-client VARCHAR(255),
-year INTEGER,
-month INTEGER,
-day INTEGER,
-user_install_id UUID,
-revenue NUMERIC(18,8)
-);
-```
-
-
-1. revenue colum truncated to 8 decimal places
+- Total imported number of rows : 2126539
 
 ## Section 1.2: Query - sql code
 
+- This query aggregates by client, country, and install date.
+- It uses COALESCE and NULLIF to handle division by zero and missing data.
+- The date range is set for 2021-12-01 to 2021-12-15.
 ```
 SELECT
   i.client,
@@ -78,17 +45,11 @@ SELECT
   i.month,
   i.day,
   COALESCE(SUM(s.spend), 0) AS ad_spend,
-  COUNT(i.user_install_id) AS installs,
-  CASE WHEN COUNT(i.user_install_id) > 0 THEN COALESCE(SUM(s.spend), 0) / COUNT(i.user_install_id) ELSE 0 END AS cpi,
-  -- ARPI D1: revenue on install day
-  ROUND(SUM(CASE WHEN r.year = i.year AND r.month = i.month AND r.day = i.day THEN r.revenue ELSE 0 END) / NULLIF(COUNT(i.user_install_id), 0), 8) AS arpi_d1,
-  -- ARPI D14: revenue within 14 days of install
-  ROUND(SUM(CASE WHEN (r.year, r.month, r.day) BETWEEN (i.year, i.month, i.day) AND (i.year, i.month, i.day + 13) THEN r.revenue ELSE 0 END) / NULLIF(COUNT(i.user_install_id), 0), 8) AS arpi_d14,
-  -- ROAS D14: revenue within 14 days / ad spend
-  CASE WHEN COALESCE(SUM(s.spend), 0) > 0
-    THEN ROUND(SUM(CASE WHEN (r.year, r.month, r.day) BETWEEN (i.year, i.month, i.day) AND (i.year, i.month, i.day + 13) THEN r.revenue ELSE 0 END) / SUM(s.spend), 8)
-    ELSE 0
-  END AS roas_d14
+  COUNT(DISTINCT i.user_install_id) AS installs,
+  CASE WHEN COUNT(DISTINCT i.user_install_id) > 0 THEN COALESCE(SUM(s.spend), 0)::float / COUNT(DISTINCT i.user_install_id) ELSE 0 END AS cpi,
+  CASE WHEN COUNT(DISTINCT i.user_install_id) > 0 THEN SUM(CASE WHEN r.day <= 1 THEN r.revenue ELSE 0 END)::float / COUNT(DISTINCT i.user_install_id) ELSE 0 END AS arpi_d1,
+  CASE WHEN COUNT(DISTINCT i.user_install_id) > 0 THEN SUM(CASE WHEN r.day <= 14 THEN r.revenue ELSE 0 END)::float / COUNT(DISTINCT i.user_install_id) ELSE 0 END AS arpi_d14,
+  CASE WHEN COALESCE(SUM(s.spend), 0) > 0 THEN SUM(CASE WHEN r.day <= 14 THEN r.revenue ELSE 0 END)::float / COALESCE(SUM(s.spend), 0) ELSE 0 END AS roas_d14
 FROM
   installs i
 LEFT JOIN spend s
@@ -101,14 +62,12 @@ LEFT JOIN revenue r
   ON r.client = i.client
   AND r.country = i.country
   AND r.user_install_id = i.user_install_id
-  -- revenue date will be filtered in aggregation
 WHERE
   (i.year, i.month, i.day) BETWEEN (2021, 12, 1) AND (2021, 12, 15)
 GROUP BY
   i.client, i.country, i.year, i.month, i.day
 ORDER BY
   i.client, i.country, i.year, i.month, i.day;
-
 ```
 ## Section 1.2: Summary table - csv
 Check summary.csv in this folder
