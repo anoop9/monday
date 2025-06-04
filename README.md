@@ -46,12 +46,11 @@ SELECT
   i.day,
   COALESCE(SUM(s.spend), 0) AS ad_spend,
   COUNT(DISTINCT i.user_install_id) AS installs,
-  CASE WHEN COUNT(DISTINCT i.user_install_id) > 0 THEN COALESCE(SUM(s.spend), 0)::float / COUNT(DISTINCT i.user_install_id) ELSE 0 END AS cpi,
-  CASE WHEN COUNT(DISTINCT i.user_install_id) > 0 THEN SUM(CASE WHEN r.day <= 1 THEN r.revenue ELSE 0 END)::float / COUNT(DISTINCT i.user_install_id) ELSE 0 END AS arpi_d1,
-  CASE WHEN COUNT(DISTINCT i.user_install_id) > 0 THEN SUM(CASE WHEN r.day <= 14 THEN r.revenue ELSE 0 END)::float / COUNT(DISTINCT i.user_install_id) ELSE 0 END AS arpi_d14,
-  CASE WHEN COALESCE(SUM(s.spend), 0) > 0 THEN SUM(CASE WHEN r.day <= 14 THEN r.revenue ELSE 0 END)::float / COALESCE(SUM(s.spend), 0) ELSE 0 END AS roas_d14
-FROM
-  installs i
+  COALESCE(SUM(s.spend), 0)::float / NULLIF(COUNT(DISTINCT i.user_install_id), 0) AS cpi,
+  SUM(CASE WHEN r.day <= 1 THEN r.revenue ELSE 0 END)::float / NULLIF(COUNT(DISTINCT i.user_install_id), 0) AS arpi_d1,
+  SUM(CASE WHEN r.day <= 14 THEN r.revenue ELSE 0 END)::float / NULLIF(COUNT(DISTINCT i.user_install_id), 0) AS arpi_d14,
+  SUM(CASE WHEN r.day <= 14 THEN r.revenue ELSE 0 END)::float / NULLIF(COALESCE(SUM(s.spend), 0), 0) AS roas_d14
+FROM installs i
 LEFT JOIN spend s
   ON s.client = i.client
   AND s.country_id = i.country_id
@@ -65,12 +64,9 @@ LEFT JOIN revenue r
   AND r.year = i.year
   AND r.month = i.month
   AND r.day = i.day
-WHERE
-  (i.year, i.month, i.day) BETWEEN (2021, 12, 1) AND (2021, 12, 15)
-GROUP BY
-  i.client, i.country, i.year, i.month, i.day
-ORDER BY
-  i.client, i.country, i.year, i.month, i.day;
+WHERE (i.year, i.month, i.day) BETWEEN (2021, 12, 1) AND (2021, 12, 15)
+GROUP BY i.client, i.country, i.year, i.month, i.day
+ORDER BY i.client, i.country, i.year, i.month, i.day;
 ```
 ## Section 1.2: Summary table - csv
 Check summary.csv in this folder
