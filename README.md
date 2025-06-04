@@ -62,6 +62,9 @@ LEFT JOIN revenue r
   ON r.client = i.client
   AND r.country = i.country
   AND r.user_install_id = i.user_install_id
+  AND r.year = i.year
+  AND r.month = i.month
+  AND r.day = i.day
 WHERE
   (i.year, i.month, i.day) BETWEEN (2021, 12, 1) AND (2021, 12, 15)
 GROUP BY
