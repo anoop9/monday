@@ -87,22 +87,26 @@ Check summary.csv in this folder
  pip install pandas matplotlib seaborn
 
 ```
+Then Check eda.ipynb for visualization
 
-Then Check eda.ipynb for plots and visulaization
+## Recommendations for Next Steps
 
-
-## Recommendations:
-
-
-- **Increase marketing spend** in these top-performing countries to leverage high ARPI_D14 and ROAS_D14, as shown in the bar plots.
-- **Analyze user behavior** in these countries to identify what drives higher revenue and engagement.
-- **Experiment with new ad creatives and channels** to further optimize CPI and maximize installs, as CPI is reasonable relative to returns.
-- **Monitor for market saturation** and diminishing returns as spend increases, using trends in the visualized metrics.
-
+- Increase marketing spend in US, DE and GB , the top-performing countries to leverage high ARPI_D14 and ROAS_D14.
+- Monitor CPI and ROAS_D14 to ensure marketing efficiency remains high as spend increases.
+- Analyze user behavior in these countries to identify drivers of high ARPI_D14 and replicate successful strategies elsewhere.
+- Experiment with new ad creatives and channels to further optimize CPI and maximize installs.
+- Watch for signs of market saturation in installs and ARPI_D14 trends to optimize future campaigns.
 
 # Part 3. LTV prediction
 
 Check ltv.ipynb
+
+## LTV Estimation Approach
+
+- Used ARPI_D1 and ARPI_D14 from summary.csv for US users in Fruit Battle.
+- Fitted a linear regression to extrapolate ARPI to day 28 (assumed user lifetime).
+- Estimated LTV as ARPI_D28 from the regression.
+- Visualized the ARPI curve and regression fit.
 
 # Part 4. AB Testing
 
