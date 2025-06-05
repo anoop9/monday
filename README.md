@@ -36,40 +36,11 @@ convert to postgresql tables.
 
 Check summary.sql 
 
-- This query aggregates by client, country, and install date.
-- It uses COALESCE and NULLIF to handle division by zero and missing data.
-- The date range is set for 2021-12-01 to 2021-12-15.
-```
-SELECT
-  i.client,
-  i.country,
-  i.year,
-  i.month,
-  i.day,
-  COALESCE(s.spend, 0) AS ad_spend,
-  COUNT(DISTINCT i.user_install_id) AS installs,
-  COALESCE(s.spend, 0)::float / NULLIF(COUNT(DISTINCT i.user_install_id), 0) AS cpi,
-  SUM(CASE WHEN r.day <= 1 THEN r.revenue ELSE 0 END)::float / NULLIF(COUNT(DISTINCT i.user_install_id), 0) AS arpi_d1,
-  SUM(CASE WHEN r.day <= 14 THEN r.revenue ELSE 0 END)::float / NULLIF(COUNT(DISTINCT i.user_install_id), 0) AS arpi_d14,
-  SUM(CASE WHEN r.day <= 14 THEN r.revenue ELSE 0 END)::float / NULLIF(COALESCE(s.spend, 0), 0) AS roas_d14
-FROM installs i
-LEFT JOIN spend s
-  ON s.client = i.client
-  AND s.country_id = i.country_id
-  AND s.year = i.year
-  AND s.month = i.month
-  AND s.day = i.day
-LEFT JOIN revenue r
-  ON r.client = i.client
-  AND r.country = i.country
-  AND r.user_install_id = i.user_install_id
-  AND r.year = i.year
-  AND r.month = i.month
-  AND r.day = i.day
-WHERE (i.year, i.month, i.day) BETWEEN (2021, 12, 1) AND (2021, 12, 15)
-GROUP BY i.client, i.country, i.year, i.month, i.day, s.spend
-ORDER BY i.client, i.country, i.year, i.month, i.day;
-```
+#### We want all revenue events for a given installed user within 14 days after their install date. So in total revenue calculation which is used for ARPI_D[N], the revenue date is not filtered BETWEEN '2021-12-01' AND '2021-12-15'. 
+- That would exclude revenue for users who installed on 2021-12-15 but earned revenue on 2021-12-16 or later (which is within D14). 
+- It would cut off valid D1 and D14 revenue, especially toward the end of your install window. eg: 2021-12-15 → 2021-12-29 (D14)
+
+
 ## Section 1.2: Summary table - csv
 Check summary.csv in this folder
 
@@ -88,16 +59,7 @@ Check summary.csv in this folder
  pip install pandas matplotlib seaborn
 
 ```
-Then Check eda.ipynb for visualization
-
-## Recommendations for Next Steps
-
-- Increase marketing spend in US, DE and GB, the top-performing countries to leverage high ARPI_D14 and ROAS_D14, as shown in the bar plots.
-- Monitor CPI and ROAS_D14 to ensure marketing efficiency remains high as spend increases.
-- Analyze user behavior in these countries to identify drivers of high ARPI_D14 and replicate successful strategies elsewhere.
-- Experiment with new ad creatives and channels to further optimize CPI and maximize installs.
-- Watch for signs of market saturation in installs and ARPI_D14 trends to optimize future campaigns.
-
+Then Check eda.ipynb for visualization and recommendations
 
 # Part 3. LTV prediction
 
