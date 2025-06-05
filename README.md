@@ -34,6 +34,8 @@ convert to postgresql tables.
 
 ## Section 1.2: Query - sql code
 
+Check summary.sql 
+
 - This query aggregates by client, country, and install date.
 - It uses COALESCE and NULLIF to handle division by zero and missing data.
 - The date range is set for 2021-12-01 to 2021-12-15.
