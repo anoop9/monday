@@ -63,14 +63,18 @@ Then Check eda.ipynb for visualization and recommendations
 
 # Part 3. LTV prediction
 
-Check ltv.ipynb
+Check ltv.ipynb for visualization
 
-## LTV Estimation Approach
+**Approach**:
+- Load and filter data: Use summary.csv, filter for fruit_battle, country == US, and install dates between 2021-12-01 and 2021-12-15.
+- Prepare ARPI values: For each install date, get arpi_d1 and arpi_d14 (average revenue per install at day 1 and day 14) and caluclate the mean arpi_d1 and arpi_d14.
+- Use linear regression with points (1, ARPI_D1) and (14, ARPI_D14). 
+- Extrapolate to predict overall ARPI at day 28, which serves as the estimated LTV.
+- Visualize: Plot ARPI over time and show the regression line extended to day 28 to visualize the LTV estimate.
 
-- Used ARPI_D1 and ARPI_D14 from summary.csv for US users in Fruit Battle.
-- Fitted a linear regression to extrapolate ARPI to day 28 (assumed user lifetime).
-- Estimated LTV as ARPI_D28 from the regression.
-- Visualized the ARPI curve and regression fit.
+
+**Estimated LTV (ARPI_D28) for US: 0.528**
+
 
 # Part 4. AB Testing
 
