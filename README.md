@@ -83,16 +83,12 @@ Check ltv.ipynb for visualization
 
 # Part 4. AB Testing
 
-Check abtest.ipynb
+Check abtest.ipynb for recommendations
 
 Explanation:
 - Calculates ARPI_D1 and D1 Retention rates for both groups.
 - Performs a two-sample t-test for ARPI_D1 and a z-test for proportions for D1 Retention.
 - Calculates statistical power for both metrics.
-
-
-### Findings
-- Both ARPI_D1 and D1 Retention are higher in the test group.
 - Recommendation is based on significance and power.
 
 #### Recommendation
@@ -111,4 +107,4 @@ Explanation:
     - No
 
 - **If not significant, what next?**
-    - Increase sample size or run the test longer to achieve sufficient power and statistical significance.
+    - Increase sample size to achieve sufficient power and statistical significance.
