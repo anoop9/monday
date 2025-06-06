@@ -87,7 +87,13 @@ Check abtest.ipynb
 
 Explanation:
 - Calculates ARPI_D1 and D1 Retention rates for both groups.
-- Performs two-sample t-test for ARPI_D1 and z-test for proportions for D1 Retention.
+- Performs a two-sample t-test for ARPI_D1 and a z-test for proportions for D1 Retention.
+- Calculates statistical power for both metrics.
+
+
+### Findings
+- Both ARPI_D1 and D1 Retention are higher in the test group.
+- Recommendation is based on significance and power.
 
 #### Recommendation
 
